@@ -1,29 +1,20 @@
 import streamlit as st
+import pandas as pd
+import numpy as np
 
-st.title("My Streamlit Web App")
+st.title("Manipulate Streamlit Chart")
 
-# Contents in the sidebar
-with st.sidebar:
-    st.header("This is a sidebar section")
-    user_input = st.text_input("Enter your name")
-    option = st.selectbox("Choose an option", ["Choice A", "Choice B", "Choice C"])
+# Generate random data
+bar_data = pd.DataFrame(np.random.randn(20, 3), columns=["a", "b", "c"])
+st.bar_chart(bar_data)
 
-# Contents in the main window
-st. header("This is the main section")
-# Display user input
-st.write(f"Hello, {user_input}! You selected option {option}.")
+# Generate random data for line chart
+line_data = pd.DataFrame(np.random.randn(20, 3), columns=["a", "b", "c"])
+st.line_chart(line_data)
 
-# Adding contents in multiple columns
-col1, col2 = st.columns(2)
-with col1:
-    st.subheader("Column 1")
-    st.button("Click me!")
-    st.write("This is some text in Column 1")
+# Generate random data for scatter chart
+chart_data = pd.DataFrame(np.random.randn(20, 3), columns=["a", "b", "c"])
+st.scatter_chart(chart_data)
 
-with col2: 
-    st.subheader("Column 2")
-    st.line_chart({"data":[1,5,2,6,2,1]})
 
-# Expandable section
-with st.expander("See explanation"):
-    st.write("This is an expandable section with additional information.")
+
