@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 
+### STAGE 1 - preprocessing the data 
 # Function to load CSV files into dataframes
 @st.cache_data
 def load_data():
@@ -25,6 +26,12 @@ trips_merged = trips_merged.drop(columns=["id_x", "car_id", "customer_id", "city
 # Transform the pickup time and dropoff time columns 
 trips_merged['pickup_date'] = pd.to_datetime(trips_merged['pickup_time']).dt.date
 trips_merged['pickup_date'] = pd.to_datetime(trips_merged['pickup_time']).dt.date
+
+### STAGE 2 - metrics and visuals
+# Also setting the wide layout for better fit of graphics
+st.set_page_config(layout="wide")
+# Setting a big title for my page 
+st.title("Car sharing data analytics dashboard")
 
 # Creating a sidebar with filtering function
 car_brands = trips_merged["brand"].dropna().unique() 
@@ -51,6 +58,47 @@ with col2:
 with col3:
  st.metric(label="Total Distance (km)", value=f"{total_distance:,.2f}")
 
+
 # Preview the contents of your dataframe
-st.subheader("Preview of the complete car sharing dataframe")
+st.subheader("Preview of the complete car sharing dataframe:")
 st.write(trips_merged.head())
+
+# Visualizing the data
+st.subheader("Car sharing data visualized:")
+
+# Three main general graphs next to each other for interactivity
+col1, col2, col3 = st.columns(3)
+
+# Customers by city to determine the clientele by city
+with col1:
+    st.subheader("Customers by city")
+    customer_city_counts = trips_merged["city_name"].value_counts()
+    st.bar_chart(customer_city_counts)
+
+# Average trip distance per city to see in which cities the customers travel the shortest and longest
+with col2:
+    st.subheader("Average trip distance per dity")
+    avg_distance_by_city = trips_merged.groupby("city_name")["distance"].mean()
+    st.bar_chart(avg_distance_by_city)
+
+# Looking at revenue per car model to see which models are the best performers
+with col3:
+    st.subheader("Revenue by car model")
+    revenue_by_car = trips_merged.groupby("model")["revenue"].sum()
+    st.bar_chart(revenue_by_car)
+
+# Adding two more graphs to see time series analytics to capture trends
+# also adding them next to eachother for better readability
+col4, col5 = st.columns(2)
+
+# Revenue trend plotted as time series
+with col4:
+    st.subheader("Revenue development over time")
+    revenue_over_time = trips_merged.groupby("pickup_date")["revenue"].sum()
+    st.line_chart(revenue_over_time)
+
+# Looking at the number of trips
+with col5:
+    st.subheader("Number of trips taken over time")
+    trips_over_time = trips_merged["pickup_date"].value_counts()
+    st.bar_chart(trips_over_time)
